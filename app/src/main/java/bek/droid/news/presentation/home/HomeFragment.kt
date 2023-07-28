@@ -2,7 +2,6 @@ package bek.droid.news.presentation.home
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,12 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
 import bek.droid.news.common.UiStateList
+import bek.droid.news.common.hide
+import bek.droid.news.common.listener.PaginationScrollListener
+import bek.droid.news.common.show
+import bek.droid.news.common.showMessage
 import bek.droid.news.data.model.ui_model.ArticleModel
 import bek.droid.news.databinding.FragmentHomeBinding
 import bek.droid.news.presentation.adapter.NewsMainAdapter
@@ -49,6 +53,21 @@ class HomeFragment : Fragment() {
     private fun initViews() {
         initObserver()
         binding.rvNewsMain.adapter = adapter
+        scrollListener()
+    }
+
+    private fun scrollListener() {
+        binding.rvNewsMain.addOnScrollListener(object :
+            PaginationScrollListener(binding.rvNewsMain.layoutManager as LinearLayoutManager) {
+            override fun loadMoreItems() {
+                viewModel.fetchNews()
+            }
+
+            override val isLastPage: Boolean
+                get() = viewModel.newsState.value == UiStateList.PAGING_END
+            override val isLoading: Boolean
+                get() = viewModel.newsState.value == UiStateList.LOADING
+        })
     }
 
     private fun initObserver() {
@@ -58,15 +77,23 @@ class HomeFragment : Fragment() {
                     when (state) {
                         UiStateList.EMPTY -> {}
 
-                        UiStateList.LOADING -> {}
+                        UiStateList.LOADING -> {
+                            showLoading()
+                        }
 
                         is UiStateList.SUCCESS -> {
-                            val articles = state.data
-                            refreshAdapter(articles)
+                            val news = state.data
+                            refreshAdapter(news)
+                            hideLoading()
                         }
 
                         is UiStateList.ERROR -> {
+                            hideLoading()
+                        }
 
+                        is UiStateList.PAGING_END -> {
+                            hideLoading()
+                            showMessage("You have reached to end!")
                         }
                     }
                 }
@@ -74,10 +101,16 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun refreshAdapter(articles: List<ArticleModel>) {
-        Log.d("TAG", "refreshAdapter: $articles")
-        adapter.submitList(articles)
-        binding.rvNewsMain.adapter = adapter
+    private fun hideLoading() {
+        binding.loading.hide()
+    }
+
+    private fun showLoading() {
+        binding.loading.show()
+    }
+
+    private fun refreshAdapter(news: List<ArticleModel>) {
+        adapter.submitList(news)
         adapter.onTaskClick = {
 
         }

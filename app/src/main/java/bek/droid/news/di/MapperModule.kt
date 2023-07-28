@@ -1,6 +1,7 @@
 package bek.droid.news.di
 
 import bek.droid.news.data.mapper.ArticleMapper
+import bek.droid.news.data.mapper.EntityMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,4 +17,6 @@ object MapperModule {
     @Provides
     fun provideArticleMapper(): ArticleMapper = ArticleMapper()
 
+    @Provides
+    fun provideEntityMapper(): EntityMapper = EntityMapper()
 }

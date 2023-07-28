@@ -7,8 +7,8 @@ import javax.inject.Inject
 
 class RemoteDataSourceImpl @Inject constructor(private val apiService: ApiService) :
     RemoteDataSource {
-    override suspend fun fetchUsBusinessNews(): NewsResponse {
-        val response = apiService.getUsBusinessNews()
+    override suspend fun fetchUsBusinessNews(page: Int): NewsResponse {
+        val response = apiService.getUsBusinessNews(page = page)
 
         return when (response.code()) {
             200 -> response.body()!!

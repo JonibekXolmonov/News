@@ -2,6 +2,6 @@
     android:shape="rectangle"
     android:padding="10dp">
 
-    <solid android:color="#ECECEC" />
+    <solid android:color="@color/edt_text_background" />
     <corners android:radius="16dp" />
 </shape>

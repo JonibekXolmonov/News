@@ -1,13 +1,10 @@
 package bek.droid.news.app.activity
 
-import android.os.Build
 import android.os.Bundle
-import android.view.WindowInsetsController
-import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import bek.droid.news.R
 import bek.droid.news.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,5 +27,11 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
+
+        setupNavigation(navController)
+    }
+
+    private fun setupNavigation(navController: NavController) {
+        binding.bottomNavView.setupWithNavController(navController)
     }
 }

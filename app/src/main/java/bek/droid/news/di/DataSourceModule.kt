@@ -1,6 +1,7 @@
 package bek.droid.news.di
 
 import bek.droid.news.data.db.NewsDao
+import bek.droid.news.data.mapper.EntityMapper
 import bek.droid.news.data.network.ApiService
 import bek.droid.news.data.source.CacheDataSourceImpl
 import bek.droid.news.data.source.LocalDataSourceImpl
@@ -30,7 +31,8 @@ object DataSourceModule {
 
     @Provides
     fun provideCacheDataSource(
-        newsDao: NewsDao
-    ): CacheDataSource = CacheDataSourceImpl(newsDao = newsDao)
+        newsDao: NewsDao,
+        entityMapper: EntityMapper
+    ): CacheDataSource = CacheDataSourceImpl(newsDao = newsDao, entityMapper = entityMapper)
 
 }

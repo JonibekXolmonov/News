@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@color/main_background"
     android:layout_height="match_parent"
     tools:context=".presentation.home.HomeFragment">
 
@@ -12,28 +13,16 @@
         android:layout_height="wrap_content"
         android:layout_margin="24dp"
         android:background="@drawable/bg_news_search"
-        android:drawableEnd="@android:drawable/ic_menu_search"
-        android:hint="Search News"
+        android:drawableEnd="@drawable/ic_search"
+        android:hint="@string/str_search_news"
         android:paddingHorizontal="16dp"
         android:paddingVertical="8dp"
+        android:textColorHint="@color/main_gray"
         android:textColor="@color/black"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tvMainTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="16dp"
-        android:text="Walk with Trend"
-        android:textColor="@color/black"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/edtSearch" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvNewsMain"
@@ -45,7 +34,21 @@
         android:paddingTop="8dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvMainTitle"
+        app:layout_constraintTop_toBottomOf="@id/edtSearch"
         tools:listitem="@layout/item_news_home_layout" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/loading"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/rvNewsMain"
+        app:layout_constraintStart_toStartOf="@id/rvNewsMain"
+        app:layout_constraintTop_toTopOf="@id/rvNewsMain"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/loading_animation" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

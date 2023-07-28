@@ -1,9 +1,8 @@
 package bek.droid.news.data.repository
 
+import bek.droid.news.common.Constants.PAGE_SIZE
 import bek.droid.news.common.SingleMapper
-import bek.droid.news.data.mapper.ArticleMapper
 import bek.droid.news.data.model.response.Article
-import bek.droid.news.data.model.response.NewsResponse
 import bek.droid.news.data.model.ui_model.ArticleModel
 import bek.droid.news.domain.datasource.cache.CacheDataSource
 import bek.droid.news.domain.datasource.local.LocalDataSource
@@ -18,13 +17,23 @@ class MainRepositoryImpl @Inject constructor(
     private val articleMapper: SingleMapper<Article, ArticleModel>
 ) : MainRepository {
 
+    private var page = 0
+    private var pagesCount = 1
     override suspend fun fetchUsBusinessNews(): List<ArticleModel> {
-        val response = remoteDataSource.fetchUsBusinessNews()
+        if (page + 1 <= pagesCount) {
+            page++
+            val response = remoteDataSource.fetchUsBusinessNews(page)
 
-        val entity: List<ArticleModel> = response.articles
-            .map { articleMapper.invoke(it) }
-        //save locally
+            //save locally
+            cacheDataSource.saveNews(response.articles)
 
-        return entity
+            pagesCount = response.totalResults / PAGE_SIZE + 1
+
+            val modelList: List<ArticleModel> = response.articles
+                .map { articleMapper.invoke(it) }
+
+            return modelList
+        }
+        return emptyList()
     }
 }

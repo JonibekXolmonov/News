@@ -3,47 +3,89 @@ package bek.droid.news.presentation.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
-import bek.droid.news.common.convertToDate
-import bek.droid.news.common.load
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import bek.droid.news.common.Constants.LARGE_NEWS_VIEW
+import bek.droid.news.common.Constants.SMALL_NEWS_VIEW
+import bek.droid.news.common.formatDate
+import bek.droid.news.common.loadWithGlide
+import bek.droid.news.common.underline
 import bek.droid.news.data.model.ui_model.ArticleModel
+import bek.droid.news.databinding.ItemNewsHomeLargeItemBinding
 import bek.droid.news.databinding.ItemNewsHomeLayoutBinding
-import com.squareup.picasso.Picasso
 
-class NewsMainAdapter : ListAdapter<ArticleModel, NewsMainAdapter.VH>(DiffUtil()) {
+class NewsMainAdapter : ListAdapter<ArticleModel, ViewHolder>(DiffUtil()) {
 
     lateinit var onTaskClick: (ArticleModel) -> Unit
 
     class DiffUtil : androidx.recyclerview.widget.DiffUtil.ItemCallback<ArticleModel>() {
         override fun areItemsTheSame(oldItem: ArticleModel, newItem: ArticleModel): Boolean {
-            return oldItem.url == newItem.url
+            return oldItem == newItem
         }
 
         override fun areContentsTheSame(oldItem: ArticleModel, newItem: ArticleModel): Boolean {
-            return oldItem.url == newItem.url
+            return oldItem == newItem
         }
     }
 
-    class VH(private val binding: ItemNewsHomeLayoutBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class SmallVH(private val binding: ItemNewsHomeLayoutBinding) :
+        ViewHolder(binding.root) {
         fun bind(article: ArticleModel) {
-            binding.ivNews.load(article.urlToImage)
+            binding.ivNews.loadWithGlide(article.urlToImage)
             binding.tvTitle.text = article.title
             binding.tvSourceName.text = article.source.name
-            binding.tvPublishedDate.text = article.publishedAt?.convertToDate()
+            binding.tvPublishedDate.text = article.publishedAt?.formatDate()
+            binding.tvAuthor.text = article.author ?: article.source.name
+            binding.tvAuthorFirstLetter.text =
+                (article.author?.first() ?: article.source.name?.first() ?: "P").toString().uppercase()
+            binding.tvAuthor.underline()
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH =
-        VH(
-            ItemNewsHomeLayoutBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
-        )
+    class LargeVH(private val binding: ItemNewsHomeLargeItemBinding) :
+        ViewHolder(binding.root) {
+        fun bind(article: ArticleModel) {
+            binding.ivNews.loadWithGlide(article.urlToImage)
+            binding.tvTitle.text = article.title
+            binding.tvSourceName.text = article.source.name
+            binding.tvPublishedDate.text = article.publishedAt?.formatDate()
+        }
+    }
 
-    override fun onBindViewHolder(holder: VH, position: Int) {
-        holder.bind(getItem(position))
+    override fun getItemViewType(position: Int): Int =
+        if (position % 4 == 0 && position != 0) LARGE_NEWS_VIEW
+        else SMALL_NEWS_VIEW
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return if (viewType == SMALL_NEWS_VIEW)
+            SmallVH(
+                ItemNewsHomeLayoutBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            ) else
+            LargeVH(
+                ItemNewsHomeLargeItemBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            )
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        when (holder) {
+            is SmallVH -> {
+                holder.bind(getItem(position))
+            }
+
+            is LargeVH -> {
+                holder.bind(getItem(position))
+            }
+        }
+    }
+
+    override fun submitList(list: List<ArticleModel>?) {
+        super.submitList(list?.let { ArrayList(it) })
     }
 }
