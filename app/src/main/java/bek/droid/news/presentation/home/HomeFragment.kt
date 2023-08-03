@@ -10,18 +10,18 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import bek.droid.news.common.UiStateList
+import bek.droid.news.common.fadeVisibility
 import bek.droid.news.common.hide
-import bek.droid.news.common.listener.PaginationScrollListener
+import bek.droid.news.common.loadWithGlide
 import bek.droid.news.common.show
-import bek.droid.news.common.showMessage
 import bek.droid.news.data.model.ui_model.ArticleModel
 import bek.droid.news.databinding.FragmentHomeBinding
 import bek.droid.news.presentation.adapter.NewsMainAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -33,6 +33,7 @@ class HomeFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        viewModel.news()
         viewModel.fetchNews()
     }
 
@@ -52,30 +53,70 @@ class HomeFragment : Fragment() {
 
     private fun initViews() {
         initObserver()
+        initNewNewsObserver()
+
+        rvScrollState()
+
         binding.rvNewsMain.adapter = adapter
-        scrollListener()
+
+        binding.alertView.alertView.setOnClickListener {
+            setAlertVisibility(visibility = View.GONE)
+            viewModel.updateNewNewsState()
+            binding.rvNewsMain.smoothScrollToPosition(0)
+        }
+
+        binding.ivSearch.setOnClickListener {
+            viewModel.fetchNews()
+        }
     }
 
-    private fun scrollListener() {
-        binding.rvNewsMain.addOnScrollListener(object :
-            PaginationScrollListener(binding.rvNewsMain.layoutManager as LinearLayoutManager) {
-            override fun loadMoreItems() {
-                viewModel.fetchNews()
+    private fun rvScrollState() {
+        binding.rvNewsMain.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy < 0)
+                    setAlertVisibility(visibility = View.GONE)
             }
-
-            override val isLastPage: Boolean
-                get() = viewModel.newsState.value == UiStateList.PAGING_END
-            override val isLoading: Boolean
-                get() = viewModel.newsState.value == UiStateList.LOADING
         })
+    }
+
+    private fun initNewNewsObserver() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.newNewsAvailable.collect { newNewsState ->
+                    if (newNewsState.isAvailable) {
+                        binding.alertView.image1.ivNews.loadWithGlide(newNewsState.news[0].urlToImage)
+                        binding.alertView.image2.ivNews.loadWithGlide(newNewsState.news[1].urlToImage)
+                        binding.alertView.image3.ivNews.loadWithGlide(newNewsState.news[2].urlToImage)
+
+                        setAlertVisibility(
+                            visibility = View.VISIBLE,
+                            duration = 250
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setAlertVisibility(visibility: Int, duration: Long = 500) {
+        binding.alertView.alertView.fadeVisibility(visibility, duration = duration)
+    }
+
+    private fun refreshAdapter(news: List<ArticleModel>) {
+        adapter.submitList(news)
+        adapter.onNewsClick = {
+
+        }
     }
 
     private fun initObserver() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.newsState.collectLatest { state ->
+                viewModel.newsState.collect { state ->
                     when (state) {
-                        UiStateList.EMPTY -> {}
+                        UiStateList.EMPTY -> {
+                        }
 
                         UiStateList.LOADING -> {
                             showLoading()
@@ -89,11 +130,12 @@ class HomeFragment : Fragment() {
 
                         is UiStateList.ERROR -> {
                             hideLoading()
+//                            showMessage(state.message)
                         }
 
                         is UiStateList.PAGING_END -> {
                             hideLoading()
-                            showMessage("You have reached to end!")
+                            //  showMessage("You have reached to end!")
                         }
                     }
                 }
@@ -107,13 +149,6 @@ class HomeFragment : Fragment() {
 
     private fun showLoading() {
         binding.loading.show()
-    }
-
-    private fun refreshAdapter(news: List<ArticleModel>) {
-        adapter.submitList(news)
-        adapter.onTaskClick = {
-
-        }
     }
 
     override fun onDestroyView() {

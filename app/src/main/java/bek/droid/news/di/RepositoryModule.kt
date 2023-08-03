@@ -1,9 +1,7 @@
 package bek.droid.news.di
 
-import bek.droid.news.common.SingleMapper
 import bek.droid.news.data.mapper.ArticleMapper
-import bek.droid.news.data.model.response.Article
-import bek.droid.news.data.model.ui_model.ArticleModel
+import bek.droid.news.data.mapper.ModelMapper
 import bek.droid.news.data.repository.MainRepositoryImpl
 import bek.droid.news.domain.datasource.cache.CacheDataSource
 import bek.droid.news.domain.datasource.local.LocalDataSource
@@ -13,6 +11,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlin.coroutines.CoroutineContext
 
 
 @Module
@@ -24,7 +23,16 @@ object RepositoryModule {
         localDataSource: LocalDataSource,
         cacheDataSource: CacheDataSource,
         remoteDataSource: RemoteDataSource,
-        mapper: ArticleMapper
+        mapper: ArticleMapper,
+        dispatcher: CoroutineContext,
+        modelMapper: ModelMapper
     ): MainRepository =
-        MainRepositoryImpl(localDataSource, cacheDataSource, remoteDataSource, mapper)
+        MainRepositoryImpl(
+            localDataSource,
+            cacheDataSource,
+            remoteDataSource,
+            mapper,
+            dispatcher,
+            modelMapper
+        )
 }

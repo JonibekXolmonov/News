@@ -1,7 +1,9 @@
 package bek.droid.news.di
 
+import android.view.Display.Mode
 import bek.droid.news.data.mapper.ArticleMapper
 import bek.droid.news.data.mapper.EntityMapper
+import bek.droid.news.data.mapper.ModelMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,4 +21,8 @@ object MapperModule {
 
     @Provides
     fun provideEntityMapper(): EntityMapper = EntityMapper()
+
+
+    @Provides
+    fun provideModelMapper(): ModelMapper = ModelMapper()
 }

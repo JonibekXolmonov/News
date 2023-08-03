@@ -3,7 +3,7 @@ package bek.droid.news.data.model.ui_model
 import bek.droid.news.data.model.response.Source
 
 data class ArticleModel(
-    val source: Source,
+    val source: Source? = null,
     val author: String? = null,
     val title: String? = null,
     val description: String? = null,

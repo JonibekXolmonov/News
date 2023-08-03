@@ -6,4 +6,6 @@
     <string name="str_home">Home</string>
     <string name="str_discover">Discover</string>
     <string name="str_save">Save</string>
+    <string name="us_business_news">US Business News</string>
+    <string name="news_available">New Articles</string>
 </resources>

@@ -4,13 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bek.droid.news.common.UiStateList
 import bek.droid.news.common.exceptions.PagingError
+import bek.droid.news.common.getMinusList
+import bek.droid.news.common.isEqual
 import bek.droid.news.data.model.ui_model.ArticleModel
+import bek.droid.news.data.model.ui_model.NewAvailable
 import bek.droid.news.domain.use_case.NewsUseCase
 import bek.droid.news.presentation.viewModel.HomeViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -25,19 +29,51 @@ class HomeViewModelImpl @Inject constructor(
     private val _newsState = MutableStateFlow<UiStateList<ArticleModel>>(UiStateList.EMPTY)
     val newsState get() = _newsState.asStateFlow()
 
+    private val _newNewsAvailable = MutableStateFlow(NewAvailable())
+    val newNewsAvailable get() = _newNewsAvailable
+
+    private var newNewsFetchedRemotely: List<ArticleModel> = listOf()
     private var allNews = mutableListOf<ArticleModel>()
+    private var newsFromLocal: List<ArticleModel> = listOf()
+
+    override fun news() {
+        loading()
+
+        viewModelScope.launch {
+            newsUseCase.allDbNews.catch { e ->
+                _newsState.value = UiStateList.ERROR(
+                    message = e.message ?: e.localizedMessage
+                    ?: "Something went wrong with Local"
+                )
+            }.collectLatest { localNews ->
+                if (localNews.isNotEmpty()) {
+                    allNews = localNews.toMutableList()
+                    if (!isEqual(newsFromLocal, localNews)) {
+                        allNews.clear()
+                        newNewsFetchedRemotely = getMinusList(localNews, newsFromLocal)
+                        allNews.addAll(newNewsFetchedRemotely)
+                        allNews.addAll(newsFromLocal)
+
+                        updateNewNewsState(
+                            isAvailable = newsFromLocal.isNotEmpty(),
+                            list = newNewsFetchedRemotely
+                        )
+                    }
+                    newsFromLocal = localNews
+                    updateNews(allNews)
+                }
+            }
+        }
+    }
 
     override fun fetchNews() {
-        _newsState.value = UiStateList.LOADING
+//        loading()
         viewModelScope.launch {
             withContext(dispatcher) {
                 val result = newsUseCase.invoke()
 
                 result.onSuccess { news ->
-                    allNews.addAll(news)
-                    _newsState.update {
-                        UiStateList.SUCCESS(allNews)
-                    }
+//                    updateNews(news)
                 }
                 result.onFailure {
                     if (it is PagingError) {
@@ -50,5 +86,16 @@ class HomeViewModelImpl @Inject constructor(
                 }
             }
         }
+    }
+    override fun loading() {
+        _newsState.value = UiStateList.LOADING
+    }
+
+    override fun updateNewNewsState(isAvailable: Boolean, list: List<ArticleModel>) {
+        _newNewsAvailable.value = NewAvailable(isAvailable, list)
+    }
+
+    override fun updateNews(news: List<ArticleModel>) {
+        _newsState.value = UiStateList.SUCCESS(allNews.toList())
     }
 }

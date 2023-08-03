@@ -1,13 +1,20 @@
 package bek.droid.news.common
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ValueAnimator
 import android.graphics.Paint
+import android.transition.Fade
+import android.transition.TransitionManager
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import bek.droid.news.R
 import com.bumptech.glide.Glide
+import kotlinx.coroutines.NonDisposableHandle.parent
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -67,3 +74,22 @@ fun TextView.underline() {
 fun Fragment.showMessage(message: String) {
     Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
 }
+
+fun View.fadeVisibility(visibility: Int, duration: Long = 500) {
+    val transition = Fade()
+    transition.duration = duration
+    transition.addTarget(this)
+    TransitionManager.beginDelayedTransition(this.parent as ViewGroup, transition)
+    this.visibility = visibility
+}
+
+fun <T> isEqual(first: List<T>, second: List<T>): Boolean {
+
+    if (first.size != second.size) {
+        return false
+    }
+
+    return first.zip(second).all { (x, y) -> x == y }
+}
+
+fun <T> getMinusList(first: List<T>, second: List<T>) = first.minus(second.toSet())

@@ -8,14 +8,13 @@ import bek.droid.news.common.Constants.LARGE_NEWS_VIEW
 import bek.droid.news.common.Constants.SMALL_NEWS_VIEW
 import bek.droid.news.common.formatDate
 import bek.droid.news.common.loadWithGlide
-import bek.droid.news.common.underline
 import bek.droid.news.data.model.ui_model.ArticleModel
 import bek.droid.news.databinding.ItemNewsHomeLargeItemBinding
 import bek.droid.news.databinding.ItemNewsHomeLayoutBinding
 
 class NewsMainAdapter : ListAdapter<ArticleModel, ViewHolder>(DiffUtil()) {
 
-    lateinit var onTaskClick: (ArticleModel) -> Unit
+    lateinit var onNewsClick: (ArticleModel?) -> Unit
 
     class DiffUtil : androidx.recyclerview.widget.DiffUtil.ItemCallback<ArticleModel>() {
         override fun areItemsTheSame(oldItem: ArticleModel, newItem: ArticleModel): Boolean {
@@ -27,32 +26,36 @@ class NewsMainAdapter : ListAdapter<ArticleModel, ViewHolder>(DiffUtil()) {
         }
     }
 
-    class SmallVH(private val binding: ItemNewsHomeLayoutBinding) :
+    inner class SmallVH(private val binding: ItemNewsHomeLayoutBinding) :
         ViewHolder(binding.root) {
         fun bind(article: ArticleModel) {
             binding.ivNews.loadWithGlide(article.urlToImage)
             binding.tvTitle.text = article.title
-            binding.tvSourceName.text = article.source.name
+            binding.tvSourceName.text = article.source?.name
             binding.tvPublishedDate.text = article.publishedAt?.formatDate()
-            binding.tvAuthor.text = article.author ?: article.source.name
-            binding.tvAuthorFirstLetter.text =
-                (article.author?.first() ?: article.source.name?.first() ?: "P").toString().uppercase()
-            binding.tvAuthor.underline()
+
+            binding.root.setOnClickListener {
+                onNewsClick(null)
+            }
         }
     }
 
-    class LargeVH(private val binding: ItemNewsHomeLargeItemBinding) :
+    inner class LargeVH(private val binding: ItemNewsHomeLargeItemBinding) :
         ViewHolder(binding.root) {
         fun bind(article: ArticleModel) {
             binding.ivNews.loadWithGlide(article.urlToImage)
             binding.tvTitle.text = article.title
-            binding.tvSourceName.text = article.source.name
+            binding.tvSourceName.text = article.source?.name
             binding.tvPublishedDate.text = article.publishedAt?.formatDate()
+
+            binding.root.setOnClickListener {
+                onNewsClick(null)
+            }
         }
     }
 
     override fun getItemViewType(position: Int): Int =
-        if (position % 4 == 0 && position != 0) LARGE_NEWS_VIEW
+        if (position % 5 == 0) LARGE_NEWS_VIEW
         else SMALL_NEWS_VIEW
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -63,7 +66,8 @@ class NewsMainAdapter : ListAdapter<ArticleModel, ViewHolder>(DiffUtil()) {
                     parent,
                     false
                 )
-            ) else
+            )
+        else
             LargeVH(
                 ItemNewsHomeLargeItemBinding.inflate(
                     LayoutInflater.from(parent.context),
@@ -85,7 +89,7 @@ class NewsMainAdapter : ListAdapter<ArticleModel, ViewHolder>(DiffUtil()) {
         }
     }
 
-    override fun submitList(list: List<ArticleModel>?) {
-        super.submitList(list?.let { ArrayList(it) })
-    }
+//    override fun submitList(list: List<ArticleModel>?) {
+//        super.submitList(list?.let { ArrayList(it) })
+//    }
 }
