@@ -91,6 +91,7 @@
         app:layout_constraintStart_toStartOf="@id/tvTitle"
         app:layout_constraintTop_toBottomOf="@id/cvImage" />
 
+
     <TextView
         app:layout_constraintEnd_toStartOf="@id/tvPublishedDate"
         android:id="@+id/tvDot"
