@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import bek.droid.news.data.model.entity.NewsEntity
 
-@Database(entities = [NewsEntity::class], version = 3, exportSchema = false)
+@Database(entities = [NewsEntity::class], version = 4, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun createTaskDao(): NewsDao
 }

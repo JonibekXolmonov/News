@@ -33,8 +33,7 @@ class HomeViewModelImpl @Inject constructor(
     val newNewsAvailable get() = _newNewsAvailable
 
     private var newNewsFetchedRemotely: List<ArticleModel> = listOf()
-    private var allNews = mutableListOf<ArticleModel>()
-    private var newsFromLocal: List<ArticleModel> = listOf()
+    var newsFromLocal = mutableListOf<ArticleModel>()
 
     override fun news() {
         loading()
@@ -47,20 +46,16 @@ class HomeViewModelImpl @Inject constructor(
                 )
             }.collectLatest { localNews ->
                 if (localNews.isNotEmpty()) {
-                    allNews = localNews.toMutableList()
                     if (!isEqual(newsFromLocal, localNews)) {
-                        allNews.clear()
                         newNewsFetchedRemotely = getMinusList(localNews, newsFromLocal)
-                        allNews.addAll(newNewsFetchedRemotely)
-                        allNews.addAll(newsFromLocal)
 
                         updateNewNewsState(
-                            isAvailable = newsFromLocal.isNotEmpty(),
+                            isAvailable = localNews.isNotEmpty() && newsFromLocal.isNotEmpty() && newNewsFetchedRemotely.isNotEmpty(),
                             list = newNewsFetchedRemotely
                         )
+                        newsFromLocal.addAll(0, newNewsFetchedRemotely)
                     }
-                    newsFromLocal = localNews
-                    updateNews(allNews)
+                    updateNews(newsFromLocal)
                 }
             }
         }
@@ -87,6 +82,7 @@ class HomeViewModelImpl @Inject constructor(
             }
         }
     }
+
     override fun loading() {
         _newsState.value = UiStateList.LOADING
     }
@@ -96,6 +92,6 @@ class HomeViewModelImpl @Inject constructor(
     }
 
     override fun updateNews(news: List<ArticleModel>) {
-        _newsState.value = UiStateList.SUCCESS(allNews.toList())
+        _newsState.value = UiStateList.SUCCESS(news.toList())
     }
 }

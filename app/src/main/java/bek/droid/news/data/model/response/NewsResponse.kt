@@ -1,5 +1,8 @@
 package bek.droid.news.data.model.response
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 typealias NewsResponse = BaseResponse<Article>
 
 data class Article(
@@ -13,7 +16,8 @@ data class Article(
     val content: String? = null
 )
 
+@Parcelize
 data class Source(
     val id: String? = null,
     val name: String? = null
-)
+) : Parcelable

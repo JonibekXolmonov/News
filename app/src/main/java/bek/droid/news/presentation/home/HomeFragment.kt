@@ -1,6 +1,7 @@
 package bek.droid.news.presentation.home
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,11 +11,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import bek.droid.news.app.activity.MainActivity
 import bek.droid.news.common.UiStateList
 import bek.droid.news.common.fadeVisibility
 import bek.droid.news.common.hide
-import bek.droid.news.common.loadWithGlide
+import bek.droid.news.common.loadWithLoadingThumb
 import bek.droid.news.common.show
 import bek.droid.news.data.model.ui_model.ArticleModel
 import bek.droid.news.databinding.FragmentHomeBinding
@@ -35,6 +38,7 @@ class HomeFragment : Fragment() {
         super.onAttach(context)
         viewModel.news()
         viewModel.fetchNews()
+        (requireActivity() as MainActivity).window.statusBarColor = Color.parseColor("#A5A5A5")
     }
 
     override fun onCreateView(
@@ -68,14 +72,21 @@ class HomeFragment : Fragment() {
         binding.ivSearch.setOnClickListener {
             viewModel.fetchNews()
         }
+
+        adapter.onNewsClick = {
+            val route = HomeFragmentDirections.actionHomeFragmentToNewsVerticalFragment(myArg = viewModel.newsFromLocal.toTypedArray(), position = it)
+            findNavController().navigate(route)
+        }
     }
 
     private fun rvScrollState() {
         binding.rvNewsMain.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                if (dy < 0)
+                if (dy < 0) {
+                    viewModel.updateNewNewsState()
                     setAlertVisibility(visibility = View.GONE)
+                }
             }
         })
     }
@@ -85,9 +96,9 @@ class HomeFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.newNewsAvailable.collect { newNewsState ->
                     if (newNewsState.isAvailable) {
-                        binding.alertView.image1.ivNews.loadWithGlide(newNewsState.news[0].urlToImage)
-                        binding.alertView.image2.ivNews.loadWithGlide(newNewsState.news[1].urlToImage)
-                        binding.alertView.image3.ivNews.loadWithGlide(newNewsState.news[2].urlToImage)
+                        binding.alertView.image1.ivNews.loadWithLoadingThumb(newNewsState.news[0].urlToImage)
+                        binding.alertView.image2.ivNews.loadWithLoadingThumb(newNewsState.news[1].urlToImage)
+                        binding.alertView.image3.ivNews.loadWithLoadingThumb(newNewsState.news[2].urlToImage)
 
                         setAlertVisibility(
                             visibility = View.VISIBLE,
@@ -105,9 +116,6 @@ class HomeFragment : Fragment() {
 
     private fun refreshAdapter(news: List<ArticleModel>) {
         adapter.submitList(news)
-        adapter.onNewsClick = {
-
-        }
     }
 
     private fun initObserver() {

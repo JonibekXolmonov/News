@@ -8,6 +8,8 @@
     android:background="@color/main_background">
 
     <androidx.cardview.widget.CardView
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardUseCompatPadding="true"
         android:id="@+id/cvImage"
         android:layout_width="0dp"
         android:layout_height="256dp"
@@ -17,13 +19,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.AppCompatImageView
+        <com.facebook.drawee.view.SimpleDraweeView
             android:id="@+id/ivNews"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:placeholderImageScaleType="centerCrop"
+            app:placeholderImage="@drawable/logo_white"
             android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:src="@mipmap/ic_launcher" />
+            android:scaleType="centerCrop"/>
 
     </androidx.cardview.widget.CardView>
 

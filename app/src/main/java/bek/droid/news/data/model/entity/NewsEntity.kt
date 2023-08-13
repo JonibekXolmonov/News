@@ -16,21 +16,21 @@ data class NewsEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int? = null,
     @ColumnInfo(name = "source_id")
-    val sourceId: String? = null,
+    val sourceId: String?,
     @ColumnInfo(name = "source_name")
-    val sourceName: String? = null,
+    val sourceName: String?,
     @ColumnInfo(name = "author")
-    val author: String? = null,
+    val author: String?,
     @ColumnInfo(name = "title")
     val title: String? = "",
     @ColumnInfo(name = "description")
-    val description: String? = null,
+    val description: String?,
     @ColumnInfo(name = "url")
-    val url: String? = null,
+    val url: String?,
     @ColumnInfo(name = "url_to_image")
-    val urlToImage: String? = null,
+    val urlToImage: String?,
     @ColumnInfo(name = "published_at")
-    val publishedAt: String? = null,
+    val publishedAt: String?,
     @ColumnInfo(name = "content")
-    val content: String? = null
+    val content: String?
 )

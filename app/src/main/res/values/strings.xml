@@ -8,4 +8,6 @@
     <string name="str_save">Save</string>
     <string name="us_business_news">US Business News</string>
     <string name="news_available">New Articles</string>
+    <string name="str_business">Business</string>
+    <string name="str_dot">·</string>
 </resources>

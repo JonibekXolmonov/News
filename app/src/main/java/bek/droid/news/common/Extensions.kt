@@ -1,9 +1,15 @@
 package bek.droid.news.common
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.ValueAnimator
+import android.content.Intent
+import android.graphics.Color
 import android.graphics.Paint
+import android.net.Uri
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
+import android.text.style.ForegroundColorSpan
+import android.text.style.RelativeSizeSpan
 import android.transition.Fade
 import android.transition.TransitionManager
 import android.view.View
@@ -14,20 +20,34 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import bek.droid.news.R
 import com.bumptech.glide.Glide
-import kotlinx.coroutines.NonDisposableHandle.parent
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.facebook.drawee.view.SimpleDraweeView
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-fun ImageView.loadWithGlide(url: String?) {
-    Glide.with(context).load(url).placeholder(R.drawable.placeholder).into(this)
+
+fun ImageView.loadWithLoadingThumb(url: String?) {
+    Glide.with(context).load(url)
+        .thumbnail(Glide.with(this).load(R.drawable.loading_gif))
+        .error(R.drawable.logo)
+        .transition(DrawableTransitionOptions.withCrossFade())
+        .into(this)
 }
 
+fun ImageView.loadWithGlide(url: String?) {
+    Glide.with(context).load(url)
+        .transition(DrawableTransitionOptions.withCrossFade())
+        .error(R.drawable.logo)
+        .into(this)
+}
 
-fun String.convertToDate(): String {
-    val sourceSdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
-    val requiredSdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    return sourceSdf.parse(this)?.let { requiredSdf.format(it) } ?: ""
+fun SimpleDraweeView.loadWithFresco(url: String?) {
+    if (!url.isNullOrEmpty()) {
+        setImageURI(url)
+    } else {
+        setActualImageResource(R.drawable.logo_white)
+    }
 }
 
 fun String.formatDate(): String {
@@ -93,3 +113,55 @@ fun <T> isEqual(first: List<T>, second: List<T>): Boolean {
 }
 
 fun <T> getMinusList(first: List<T>, second: List<T>) = first.minus(second.toSet())
+
+fun String?.isNotNull() = this != "NULL"
+
+fun Fragment.openNewsInBrowser(url: String?) {
+    val i = Intent(Intent.ACTION_VIEW)
+    i.data = Uri.parse(url)
+    startActivity(i)
+}
+
+fun Fragment.shareScreenShot(bitmapUri: Uri) {
+    val intent = Intent(Intent.ACTION_SEND)
+    intent.type = "image/*"
+    intent.putExtra(Intent.EXTRA_STREAM, bitmapUri)
+    startActivity(Intent.createChooser(intent, "Share news screenshot"))
+}
+
+fun TextView.setSpannableText(originalText: String?, onCLick: () -> Unit) {
+    val additionalText = " read on web"
+
+    val spannableString = SpannableString(originalText + additionalText)
+
+    val clickableSpan: ClickableSpan = object : ClickableSpan() {
+        override fun onClick(widget: View) {
+            onCLick()
+        }
+    }
+
+    spannableString.setSpan(
+        clickableSpan,
+        originalText?.length ?: 0,
+        spannableString.length,
+        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+    )
+    spannableString.setSpan(
+        ForegroundColorSpan(Color.WHITE),
+        spannableString.length - additionalText.length,
+        spannableString.length,
+        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+    )
+    spannableString.setSpan(
+        RelativeSizeSpan(0.8f),
+        spannableString.length - additionalText.length,
+        spannableString.length,
+        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+    )
+
+
+    text = spannableString
+
+    movementMethod = LinkMovementMethod.getInstance()
+}
+

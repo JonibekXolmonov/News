@@ -18,7 +18,15 @@
         android:id="@+id/newsVerticalFragment"
         android:name="bek.droid.news.presentation.news.NewsVerticalFragment"
         android:label="fragment_news_vertical"
-        tools:layout="@layout/fragment_news_vertical" />
+        tools:layout="@layout/fragment_news_vertical" >
+        <argument
+            android:name="myArg"
+            app:argType="bek.droid.news.data.model.ui_model.ArticleModel[]"
+            />
+        <argument android:name="position"
+            app:argType="integer"
+            android:defaultValue="0"/>
+    </fragment>
     <fragment
         android:id="@+id/searchFragment"
         android:name="bek.droid.news.presentation.search.SearchFragment"

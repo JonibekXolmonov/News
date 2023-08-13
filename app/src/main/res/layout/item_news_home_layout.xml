@@ -8,6 +8,8 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvImage"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardUseCompatPadding="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:cardCornerRadius="8dp"
@@ -15,13 +17,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.AppCompatImageView
+        <com.facebook.drawee.view.SimpleDraweeView
             android:id="@+id/ivNews"
             android:layout_width="100dp"
             android:layout_height="84dp"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
-            android:src="@mipmap/ic_launcher" />
+            app:placeholderImageScaleType="centerCrop"
+            app:placeholderImage="@drawable/logo_white" />
 
     </androidx.cardview.widget.CardView>
 
@@ -31,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
         android:fontFamily="@font/roboto_medium"
-        android:text="Business"
+        android:text="@string/str_business"
         android:textAllCaps="true"
         android:textColor="@color/category_text_color"
         android:textSize="12sp"
@@ -59,15 +62,14 @@
         app:layout_constraintTop_toTopOf="@id/ivBookmark" />
 
     <TextView
-        android:ellipsize="end"
         android:id="@+id/tvTitle"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginEnd="32dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/roboto_bold"
         android:gravity="bottom"
         android:maxLines="3"
-        android:fontFamily="@font/roboto_bold"
-        android:text="Who is Elon Musk's spouse? Meet his current partner and ex-wives Who is Elon Musk's spouse? Meet his current partner and ex-wives"
         android:textColor="@color/new_title_color"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@id/cvImage"
@@ -77,32 +79,31 @@
 
     <TextView
         android:id="@+id/tvSourceName"
-        app:layout_constraintEnd_toStartOf="@id/tvDot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/roboto_regular"
-        android:text="Biztoc.com"
         android:maxLength="20"
         android:textColor="@color/gray"
         android:textSize="12sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@id/line"
+        app:layout_constraintEnd_toStartOf="@id/tvDot"
         app:layout_constraintStart_toStartOf="@id/tvTitle"
         app:layout_constraintTop_toBottomOf="@id/cvImage" />
 
 
     <TextView
-        app:layout_constraintEnd_toStartOf="@id/tvPublishedDate"
         android:id="@+id/tvDot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="·"
-        android:textSize="20sp"
+        android:text="@string/str_dot"
         android:textColor="@color/gray"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/tvSourceName"
+        app:layout_constraintEnd_toStartOf="@id/tvPublishedDate"
         app:layout_constraintStart_toEndOf="@id/tvSourceName"
         app:layout_constraintTop_toTopOf="@id/tvSourceName" />
 
@@ -112,11 +113,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:fontFamily="@font/roboto_regular"
-        android:text="3h ago"
         android:textColor="@color/gray"
         android:textSize="12sp"
-        app:layout_constraintEnd_toStartOf="@id/cvImage"
         app:layout_constraintBottom_toBottomOf="@id/tvSourceName"
+        app:layout_constraintEnd_toStartOf="@id/cvImage"
         app:layout_constraintStart_toEndOf="@id/tvDot"
         app:layout_constraintTop_toTopOf="@id/tvSourceName" />
 

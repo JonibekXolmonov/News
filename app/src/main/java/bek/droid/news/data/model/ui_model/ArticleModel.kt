@@ -1,7 +1,10 @@
 package bek.droid.news.data.model.ui_model
 
+import android.os.Parcelable
 import bek.droid.news.data.model.response.Source
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class ArticleModel(
     val source: Source? = null,
     val author: String? = null,
@@ -11,4 +14,4 @@ data class ArticleModel(
     val urlToImage: String? = null,
     val publishedAt: String? = null,
     val content: String? = null
-)
+) : Parcelable

@@ -6,6 +6,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import bek.droid.news.R
+import bek.droid.news.common.hide
 import bek.droid.news.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,6 +28,14 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if (destination.id ==
+                R.id.newsVerticalFragment
+            ) {
+                binding.bottomNavView.hide()
+            }
+        }
 
         setupNavigation(navController)
     }

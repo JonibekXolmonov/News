@@ -1,60 +1,99 @@
 package bek.droid.news.presentation.news
 
+import android.content.Context
+import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import bek.droid.news.R
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.PagerSnapHelper
+import androidx.recyclerview.widget.SnapHelper
+import bek.droid.news.app.activity.MainActivity
+import bek.droid.news.common.openNewsInBrowser
+import bek.droid.news.common.shareScreenShot
+import bek.droid.news.data.model.ui_model.ArticleModel
+import bek.droid.news.databinding.FragmentNewsVerticalBinding
+import bek.droid.news.presentation.adapter.NewsDetailAdapter
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [NewsVerticalFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+@AndroidEntryPoint
 class NewsVerticalFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+    private var _binding: FragmentNewsVerticalBinding? = null
+    private val binding get() = _binding!!
+    private val viewModel by viewModels<DetailsViewModelImpl>()
+    private val adapter by lazy { NewsDetailAdapter() }
+    private val args: NewsVerticalFragmentArgs by navArgs()
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (requireActivity() as MainActivity).window.statusBarColor = Color.parseColor("#000000")
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_news_vertical, container, false)
+        _binding = FragmentNewsVerticalBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment NewsVerticalFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            NewsVerticalFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initViews()
+        initScreenshotObserver()
+    }
+
+    private fun initScreenshotObserver() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.screenshotUri.collectLatest { uri: Uri? ->
+                    uri?.let {
+                        shareScreenShot(bitmapUri = uri)
+                    }
                 }
             }
+        }
+    }
+
+    private fun refreshAdapter(news: List<ArticleModel>) {
+        adapter.submitList(news)
+    }
+
+    private fun initViews() {
+        with(binding) {
+            rvNews.adapter = adapter
+            refreshAdapter(args.myArg.toList())
+            rvNews.scrollToPosition(args.position)
+
+            val snapHelper: SnapHelper = PagerSnapHelper()
+            snapHelper.attachToRecyclerView(rvNews)
+
+            ivBack.setOnClickListener {
+                findNavController().popBackStack()
+            }
+
+            ivScreenshotShare.setOnClickListener {
+                viewModel.captureScreenshot(container)
+            }
+        }
+        adapter.onNewsClick = {
+            openNewsInBrowser(it.url)
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
