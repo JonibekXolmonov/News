@@ -27,4 +27,8 @@ class NewsUseCaseImpl @Inject constructor(private val mainRepository: MainReposi
             Result.failure(e)
         }
     }
+
+    override fun search(query: String): Flow<List<ArticleModel>> {
+        return mainRepository.search(query)
+    }
 }

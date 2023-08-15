@@ -17,6 +17,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.fragment.app.Fragment
 import bek.droid.news.R
 import com.bumptech.glide.Glide
@@ -86,6 +87,12 @@ fun View.show() {
 fun View.hide() {
     visibility = View.GONE
 }
+
+fun View.invisible() {
+    visibility = View.INVISIBLE
+}
+
+fun AppCompatEditText.isNotEmpty() = text?.isNotEmpty() ?: true
 
 fun TextView.underline() {
     paintFlags = paintFlags or Paint.UNDERLINE_TEXT_FLAG

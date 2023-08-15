@@ -39,4 +39,9 @@ class MainRepositoryImpl @Inject constructor(
 
         return modelList
     }
+
+    override fun search(query: String): Flow<List<ArticleModel>> {
+        return localDataSource.search("%".plus(query).plus("%"))
+            .map { it.map { entity -> modelMapper(entity) } }.flowOn(context = dispatcher)
+    }
 }

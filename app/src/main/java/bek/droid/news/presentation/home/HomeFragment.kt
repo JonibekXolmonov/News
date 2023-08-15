@@ -70,11 +70,15 @@ class HomeFragment : Fragment() {
         }
 
         binding.ivSearch.setOnClickListener {
-            viewModel.fetchNews()
+            (requireActivity() as MainActivity).setSearchAsSelected()
         }
 
         adapter.onNewsClick = {
-            val route = HomeFragmentDirections.actionHomeFragmentToNewsVerticalFragment(myArg = viewModel.newsFromLocal.toTypedArray(), position = it)
+            val route = HomeFragmentDirections.actionHomeFragmentToNewsVerticalFragment(
+                myArg = viewModel.newsFromLocal.toTypedArray(),
+                position = it
+            )
+
             findNavController().navigate(route)
         }
     }

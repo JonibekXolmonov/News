@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.Flow
 interface MainRepository {
     suspend fun fetchUsBusinessNews(): List<ArticleModel>
 
+     fun search(query: String):Flow<List<ArticleModel>>
+
     val allNewsCached: Flow<List<ArticleModel>>
 
 }
