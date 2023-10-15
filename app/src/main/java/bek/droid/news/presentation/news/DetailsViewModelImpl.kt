@@ -5,10 +5,8 @@ import android.net.Uri
 import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import bek.droid.news.common.enums.UiStateList
 import bek.droid.news.common.util.FileUtils
 import bek.droid.news.data.model.ui_model.ArticleModel
-import bek.droid.news.domain.use_case.BookmarkUseCase
 import bek.droid.news.domain.use_case.NewsUseCase
 import bek.droid.news.presentation.viewModel.DetailsViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,6 +29,7 @@ class DetailsViewModelImpl @Inject constructor(
     private val useCase: NewsUseCase
 ) : ViewModel(),
     DetailsViewModel {
+
 
     private val _screenshotUri = Channel<Uri?>()
     val screenshotUri get() = _screenshotUri.receiveAsFlow()
