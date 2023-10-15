@@ -30,7 +30,6 @@ class DetailsViewModelImpl @Inject constructor(
 ) : ViewModel(),
     DetailsViewModel {
 
-
     private val _screenshotUri = Channel<Uri?>()
     val screenshotUri get() = _screenshotUri.receiveAsFlow()
 
