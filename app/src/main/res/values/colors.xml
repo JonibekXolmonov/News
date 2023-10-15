@@ -25,4 +25,5 @@
     <color name="black_2">#49454F</color>
     <color name="blue">#1E9AF1</color>
     <color name="ripple_color">#A1A1A1</color>
+    <color name="light_gray">#F5F5F5</color>
 </resources>

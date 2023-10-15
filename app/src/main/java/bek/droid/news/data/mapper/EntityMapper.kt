@@ -1,6 +1,5 @@
 package bek.droid.news.data.mapper
 
-import bek.droid.news.common.SingleMapper
 import bek.droid.news.data.model.entity.NewsEntity
 import bek.droid.news.data.model.response.Article
 

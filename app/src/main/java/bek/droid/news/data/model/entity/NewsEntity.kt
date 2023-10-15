@@ -22,7 +22,7 @@ data class NewsEntity(
     @ColumnInfo(name = "author")
     val author: String?,
     @ColumnInfo(name = "title")
-    val title: String? = "",
+    val title: String?,
     @ColumnInfo(name = "description")
     val description: String?,
     @ColumnInfo(name = "url")
@@ -32,5 +32,7 @@ data class NewsEntity(
     @ColumnInfo(name = "published_at")
     val publishedAt: String?,
     @ColumnInfo(name = "content")
-    val content: String?
+    val content: String?,
+    @ColumnInfo(name = "is_saved")
+    val isSaved: Boolean = false
 )

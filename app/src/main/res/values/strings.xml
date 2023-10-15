@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">News</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="str_search_news">Search news</string>
     <string name="str_home">Home</string>
@@ -10,4 +9,10 @@
     <string name="news_available">New Articles</string>
     <string name="str_business">Business</string>
     <string name="str_dot">·</string>
+    <string name="str_read_later">Read later</string>
+    <string name="str_collections">Collections</string>
+    <string name="str_count">0 news</string>
+    <string name="str_important">Important news</string>
+    <string name="str_saved">Saved</string>
+    <string name="saved_news">Your saved news</string>
 </resources>

@@ -8,7 +8,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import bek.droid.news.data.db.AppDatabase
-import bek.droid.news.data.db.NewsDao
+import bek.droid.news.data.db.dao.ImportantNewsDao
+import bek.droid.news.data.db.dao.LaterReadNewsDao
+import bek.droid.news.data.db.dao.NewsDao
 import javax.inject.Singleton
 
 @Module
@@ -28,6 +30,19 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideNewsDao(appDatabase: AppDatabase): NewsDao {
-        return appDatabase.createTaskDao()
+        return appDatabase.createNewsDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideImportantNewsDao(appDatabase: AppDatabase): ImportantNewsDao {
+        return appDatabase.createImportantNewsDoa()
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideLaterReadNewsDao(appDatabase: AppDatabase): LaterReadNewsDao {
+        return appDatabase.createLaterReadNewsDoa()
     }
 }

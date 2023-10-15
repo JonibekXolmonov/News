@@ -1,7 +1,11 @@
 package bek.droid.news.di
 
 import bek.droid.news.data.mapper.ArticleMapper
+import bek.droid.news.data.mapper.EntityMapper
+import bek.droid.news.data.mapper.ImportantToModelMapper
 import bek.droid.news.data.mapper.ModelMapper
+import bek.droid.news.data.mapper.ModelToEntityMapper
+import bek.droid.news.data.mapper.ReadLaterToModelMapper
 import bek.droid.news.data.repository.MainRepositoryImpl
 import bek.droid.news.domain.datasource.cache.CacheDataSource
 import bek.droid.news.domain.datasource.local.LocalDataSource
@@ -25,7 +29,9 @@ object RepositoryModule {
         remoteDataSource: RemoteDataSource,
         mapper: ArticleMapper,
         dispatcher: CoroutineContext,
-        modelMapper: ModelMapper
+        modelMapper: ModelMapper,
+        importantToModelMapper: ImportantToModelMapper,
+        readLaterToModelMapper: ReadLaterToModelMapper
     ): MainRepository =
         MainRepositoryImpl(
             localDataSource,
@@ -33,6 +39,8 @@ object RepositoryModule {
             remoteDataSource,
             mapper,
             dispatcher,
-            modelMapper
+            modelMapper,
+            importantToModelMapper,
+            readLaterToModelMapper
         )
 }

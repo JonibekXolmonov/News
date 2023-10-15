@@ -4,14 +4,16 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import bek.droid.news.common.formatDate
-import bek.droid.news.common.loadWithFresco
+import bek.droid.news.R
+import bek.droid.news.common.util.formatDate
+import bek.droid.news.common.util.loadWithFresco
 import bek.droid.news.data.model.ui_model.ArticleModel
 import bek.droid.news.databinding.ItemNewsHomeLayoutBinding
 
 class NewsSearchAdapter : ListAdapter<ArticleModel, NewsSearchAdapter.VH>(DiffUtil()) {
 
     lateinit var onNewsClick: (Int) -> Unit
+    lateinit var onBookmarkAction: (ArticleModel) -> Unit
 
     class DiffUtil : androidx.recyclerview.widget.DiffUtil.ItemCallback<ArticleModel>() {
         override fun areItemsTheSame(oldItem: ArticleModel, newItem: ArticleModel): Boolean {
@@ -31,6 +33,11 @@ class NewsSearchAdapter : ListAdapter<ArticleModel, NewsSearchAdapter.VH>(DiffUt
                 tvTitle.text = article.title
                 tvSourceName.text = article.source?.name
                 tvPublishedDate.text = article.publishedAt?.formatDate()
+                ivBookmark.setImageResource(if (article.isSaved) R.drawable.ic_bookmark_added else R.drawable.ic_bookmark)
+
+                ivBookmark.setOnClickListener {
+                    onBookmarkAction(article)
+                }
 
                 root.setOnClickListener {
                     onNewsClick(position)
@@ -47,5 +54,9 @@ class NewsSearchAdapter : ListAdapter<ArticleModel, NewsSearchAdapter.VH>(DiffUt
 
     override fun onBindViewHolder(holder: VH, position: Int) {
         holder.bind(getItem(position), position)
+    }
+
+    override fun submitList(list: List<ArticleModel>?) {
+        super.submitList(list?.let { ArrayList(it) })
     }
 }

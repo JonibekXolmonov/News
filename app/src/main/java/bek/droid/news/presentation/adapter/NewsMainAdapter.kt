@@ -2,19 +2,24 @@ package bek.droid.news.presentation.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import bek.droid.news.R
 import bek.droid.news.common.Constants.LARGE_NEWS_VIEW
 import bek.droid.news.common.Constants.SMALL_NEWS_VIEW
-import bek.droid.news.common.formatDate
-import bek.droid.news.common.loadWithFresco
+import bek.droid.news.common.util.formatDate
+import bek.droid.news.common.util.loadWithFresco
 import bek.droid.news.data.model.ui_model.ArticleModel
 import bek.droid.news.databinding.ItemNewsHomeLargeItemBinding
 import bek.droid.news.databinding.ItemNewsHomeLayoutBinding
 
 class NewsMainAdapter : ListAdapter<ArticleModel, ViewHolder>(DiffUtil()) {
 
-    lateinit var onNewsClick: (Int) -> Unit
+    lateinit var onNewsClick: (ArticleModel, ImageView, Int) -> Unit
+    lateinit var onBookmarkAction: (ArticleModel) -> Unit
+    lateinit var onShareAction: (ArticleModel) -> Unit
+
 
     class DiffUtil : androidx.recyclerview.widget.DiffUtil.ItemCallback<ArticleModel>() {
         override fun areItemsTheSame(oldItem: ArticleModel, newItem: ArticleModel): Boolean {
@@ -35,9 +40,19 @@ class NewsMainAdapter : ListAdapter<ArticleModel, ViewHolder>(DiffUtil()) {
                 tvTitle.text = article.title
                 tvSourceName.text = article.source?.name
                 tvPublishedDate.text = article.publishedAt?.formatDate()
+                ivBookmark.setImageResource(if (article.isSaved) R.drawable.ic_bookmark_added else R.drawable.ic_bookmark)
+                ivNews.transitionName = article.title
+
+                ivBookmark.setOnClickListener {
+                    onBookmarkAction(article)
+                }
+
+                ivShare.setOnClickListener {
+                    onShareAction(article)
+                }
 
                 root.setOnClickListener {
-                    onNewsClick(position)
+                    onNewsClick(article, ivNews, position)
                 }
             }
         }
@@ -51,9 +66,19 @@ class NewsMainAdapter : ListAdapter<ArticleModel, ViewHolder>(DiffUtil()) {
                 tvTitle.text = article.title
                 tvSourceName.text = article.source?.name
                 tvPublishedDate.text = article.publishedAt?.formatDate()
+                ivBookmark.setImageResource(if (article.isSaved) R.drawable.ic_bookmark_added else R.drawable.ic_bookmark)
+                ivNews.transitionName = article.title
+
+                ivBookmark.setOnClickListener {
+                    onBookmarkAction(article)
+                }
+
+                ivShare.setOnClickListener {
+                    onShareAction(article)
+                }
 
                 root.setOnClickListener {
-                    onNewsClick(position)
+                    onNewsClick(article, ivNews, position)
                 }
             }
         }
@@ -94,7 +119,7 @@ class NewsMainAdapter : ListAdapter<ArticleModel, ViewHolder>(DiffUtil()) {
         }
     }
 
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
+    override fun submitList(list: List<ArticleModel>?) {
+        super.submitList(list?.let { ArrayList(it) })
     }
 }

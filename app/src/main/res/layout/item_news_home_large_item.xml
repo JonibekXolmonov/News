@@ -32,18 +32,17 @@
 
     <ImageView
         android:id="@+id/ivBookmark"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:src="@drawable/ic_bookmark"
         app:layout_constraintBottom_toBottomOf="@id/tvSourceName"
         app:layout_constraintEnd_toStartOf="@id/ivShare"
-        android:layout_marginEnd="8dp"
         app:layout_constraintTop_toTopOf="@id/tvSourceName" />
 
     <ImageView
         android:id="@+id/ivShare"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:src="@drawable/ic_share"
         app:layout_constraintBottom_toBottomOf="@id/ivBookmark"
         app:layout_constraintEnd_toEndOf="@id/cvImage"

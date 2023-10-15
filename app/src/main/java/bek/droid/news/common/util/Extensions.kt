@@ -1,4 +1,4 @@
-package bek.droid.news.common
+package bek.droid.news.common.util
 
 import android.content.Intent
 import android.graphics.Color
@@ -19,6 +19,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearSmoothScroller
+import androidx.recyclerview.widget.RecyclerView
 import bek.droid.news.R
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -33,13 +35,6 @@ fun ImageView.loadWithLoadingThumb(url: String?) {
         .thumbnail(Glide.with(this).load(R.drawable.loading_gif))
         .error(R.drawable.logo)
         .transition(DrawableTransitionOptions.withCrossFade())
-        .into(this)
-}
-
-fun ImageView.loadWithGlide(url: String?) {
-    Glide.with(context).load(url)
-        .transition(DrawableTransitionOptions.withCrossFade())
-        .error(R.drawable.logo)
         .into(this)
 }
 
@@ -116,7 +111,7 @@ fun <T> isEqual(first: List<T>, second: List<T>): Boolean {
         return false
     }
 
-    return first.zip(second).all { (x, y) -> x == y }
+    return first.zip(second).all { (x, y) -> x?.equals(y) ?: false }
 }
 
 fun <T> getMinusList(first: List<T>, second: List<T>) = first.minus(second.toSet())
@@ -127,6 +122,14 @@ fun Fragment.openNewsInBrowser(url: String?) {
     val i = Intent(Intent.ACTION_VIEW)
     i.data = Uri.parse(url)
     startActivity(i)
+}
+
+fun Fragment.shareLinkAsText(url: String) {
+    val intent = Intent(Intent.ACTION_SEND)
+    intent.type = "text/html";
+    intent.putExtra(Intent.EXTRA_TEXT, url)
+
+    startActivity(Intent.createChooser(intent, "Share news"));
 }
 
 fun Fragment.shareScreenShot(bitmapUri: Uri) {

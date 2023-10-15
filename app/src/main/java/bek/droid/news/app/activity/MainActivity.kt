@@ -1,14 +1,15 @@
 package bek.droid.news.app.activity
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import bek.droid.news.R
-import bek.droid.news.common.hide
-import bek.droid.news.common.invisible
-import bek.droid.news.common.show
+import bek.droid.news.common.util.invisible
+import bek.droid.news.common.util.show
 import bek.droid.news.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -41,6 +42,18 @@ class MainActivity : AppCompatActivity() {
         }
 
         setupNavigation(navController)
+
+        setNavDestinationChangeListener()
+    }
+
+    private fun setNavDestinationChangeListener() {
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if (destination.id == R.id.newsVerticalFragment) {
+                window.statusBarColor = Color.parseColor("#000000")
+            } else {
+                window.statusBarColor = Color.parseColor("#A5A5A5")
+            }
+        }
     }
 
     fun setSearchAsSelected() {

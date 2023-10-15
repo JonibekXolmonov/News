@@ -6,4 +6,9 @@ object Constants {
     const val LARGE_NEWS_VIEW = 1
 
     const val DEFAULT_PAGE = 1
+
+
+    const val TAG = "onBookmarkAction"
+
+    const val NO_URL_ATTACHED = "No link attached"
 }

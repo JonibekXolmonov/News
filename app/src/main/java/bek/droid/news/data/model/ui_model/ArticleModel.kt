@@ -6,6 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ArticleModel(
+    val id: Int? = null,
     val source: Source? = null,
     val author: String? = null,
     val title: String? = null,
@@ -13,5 +14,17 @@ data class ArticleModel(
     val url: String? = null,
     val urlToImage: String? = null,
     val publishedAt: String? = null,
-    val content: String? = null
-) : Parcelable
+    val content: String? = null,
+    var isSaved: Boolean = false
+) : Parcelable {
+
+    override fun hashCode(): Int {
+        return title.hashCode() * description.hashCode() * content.hashCode() * isSaved.hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return if (other is ArticleModel) {
+            this.title == other.title && this.content == other.content && this.description == other.description && this.isSaved == other.isSaved
+        } else false
+    }
+}

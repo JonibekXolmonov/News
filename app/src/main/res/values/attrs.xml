@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="BookmarkView">
+        <attr name="mainImage" format="reference" />
+        <attr name="bookmarkName" format="string" />
+        <attr name="newsCount" format="string" />
+        <attr name="bookmarkIcon" format="reference" />
+    </declare-styleable>
+</resources>

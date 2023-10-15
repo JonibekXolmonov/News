@@ -4,16 +4,18 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import bek.droid.news.common.formatDate
-import bek.droid.news.common.isNotNull
-import bek.droid.news.common.loadWithFresco
-import bek.droid.news.common.setSpannableText
+import bek.droid.news.common.Constants.NO_URL_ATTACHED
+import bek.droid.news.common.util.formatDate
+import bek.droid.news.common.util.isNotNull
+import bek.droid.news.common.util.loadWithFresco
+import bek.droid.news.common.util.setSpannableText
 import bek.droid.news.data.model.ui_model.ArticleModel
 import bek.droid.news.databinding.NewsDetailLayoutBinding
 
 class NewsDetailAdapter : ListAdapter<ArticleModel, NewsDetailAdapter.VH>(DiffUtil()) {
 
-    lateinit var onNewsClick: (ArticleModel) -> Unit
+    lateinit var onNewsReadMore: (ArticleModel) -> Unit
+    var visibleArticleModel: ArticleModel? = null
 
     class DiffUtil : androidx.recyclerview.widget.DiffUtil.ItemCallback<ArticleModel>() {
         override fun areItemsTheSame(oldItem: ArticleModel, newItem: ArticleModel): Boolean {
@@ -28,6 +30,7 @@ class NewsDetailAdapter : ListAdapter<ArticleModel, NewsDetailAdapter.VH>(DiffUt
     inner class VH(private val binding: NewsDetailLayoutBinding) :
         ViewHolder(binding.root) {
         fun bind(article: ArticleModel) {
+            visibleArticleModel = article
             with(binding) {
                 ivNews.loadWithFresco(article.urlToImage)
 
@@ -37,6 +40,7 @@ class NewsDetailAdapter : ListAdapter<ArticleModel, NewsDetailAdapter.VH>(DiffUt
                 tvPublishedDate.text = article.publishedAt?.formatDate()
 
                 tvTitle.text = article.title
+                ivNews.transitionName = article.title
 
                 var originalText =
                     if (!article.content.isNullOrBlank()) article.content else article.description
@@ -44,7 +48,7 @@ class NewsDetailAdapter : ListAdapter<ArticleModel, NewsDetailAdapter.VH>(DiffUt
 
                 if (article.url.isNotNull()) {
                     tvDescription.setSpannableText(originalText) {
-                        onNewsClick(article)
+                        onNewsReadMore(article)
                     }
                 } else {
                     tvDescription.text = originalText
@@ -69,4 +73,6 @@ class NewsDetailAdapter : ListAdapter<ArticleModel, NewsDetailAdapter.VH>(DiffUt
     override fun getItemId(position: Int): Long {
         return position.toLong()
     }
+
+    fun getCurrentNewsLink(): String = visibleArticleModel?.url ?: NO_URL_ATTACHED
 }

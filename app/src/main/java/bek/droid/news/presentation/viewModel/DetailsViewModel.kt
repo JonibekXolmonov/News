@@ -10,4 +10,8 @@ interface DetailsViewModel {
     fun captureScreenshot(view: View)
 
     fun saveBitmap(bitmap: Bitmap): Deferred<Uri?>
+
+    fun news()
+
+    fun bookmarkState(saved: Boolean?)
 }

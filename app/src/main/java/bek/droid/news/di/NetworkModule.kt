@@ -57,5 +57,4 @@ object NetworkModule {
             chain.proceed(builder.build())
         })
         .build()
-
 }

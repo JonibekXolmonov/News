@@ -12,4 +12,5 @@ interface HomeViewModel {
     fun loading()
 
     fun updateNewNewsState(isAvailable: Boolean = false, list: List<ArticleModel> = emptyList())
+
 }
